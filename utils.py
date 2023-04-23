@@ -55,7 +55,7 @@ def check_numerical_data(observation):
         return False, error
     return True, ""
 #Boolean
-def check_boolean_data(observation)::
+def check_boolean_data(observation):
 
     column = "Part of a policing operation"
 
