@@ -37,12 +37,11 @@ DB.create_tables([Prediction], safe=True)
 with open('columns.json') as fh:
     columns = json.load(fh)
 
+with open('pipeline.pickle', 'rb') as fh:
+    pipeline = joblib.load(fh)
 
 with open('dtypes.pickle', 'rb') as fh:
     dtypes = pickle.load(fh)
-
-
-pipeline = decompress_pickle('pipeline.pickle.pbz2')
 
 
 # End model un-pickling
