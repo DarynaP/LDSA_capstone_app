@@ -7,6 +7,7 @@ from flask import Flask, jsonify, request
 from peewee import (Model, IntegerField, FloatField,TextField, IntegrityError,BooleanField)
 from playhouse.shortcuts import model_to_dict
 from playhouse.db_url import connect
+from category_encoders import OneHotEncoder
 from utils import *
 
 
