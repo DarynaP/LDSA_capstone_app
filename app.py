@@ -1,0 +1,169 @@
+import os
+import json
+import pickle
+import joblib
+import pandas as pd
+from flask import Flask, jsonify, request
+from peewee import (Model, IntegerField, FloatField,TextField, IntegrityError,BooleanField)
+from playhouse.shortcuts import model_to_dict
+from playhouse.db_url import connect
+from utils import *
+
+
+########################################
+# Begin database
+
+DB = connect(os.environ.get('DATABASE_URL') or 'sqlite:///predictions.db')
+
+class Prediction(Model):
+    observation_id = TextField(unique=True)
+    observation = TextField()
+    outcome = BooleanField()
+    predicted_outcome = BooleanField(null=True)
+
+    class Meta:
+        database = DB
+
+
+DB.create_tables([Prediction], safe=True)
+
+# End database
+########################################
+
+########################################
+# Unpickle the previously-trained model
+
+
+with open('columns.json') as fh:
+    columns = json.load(fh)
+
+
+with open('dtypes.pickle', 'rb') as fh:
+    dtypes = pickle.load(fh)
+
+
+pipeline = decompress_pickle('pipeline.pickle.pbz2')
+
+
+# End model un-pickling
+########################################
+
+
+########################################
+# Begin webserver
+
+app = Flask(__name__)
+
+
+@app.route('/should_search', methods=['POST'])
+def predict():
+    obs_dict = request.get_json()
+    ##start validations
+    request_ok, error = check_id(obs_dict)
+    if not request_ok:
+        response = {'observation_id': None, 'error': error}
+        print(response)
+        return jsonify(response)
+    #Defining id
+    _id = obs_dict['observation_id']
+
+    request_ok, error = check_columns(obs_dict)
+    if not request_ok:
+        response = {'observation_id': _id, 'error': error}
+        print(response)
+        return jsonify(response)
+
+    request_ok, error = check_categorical_data(obs_dict)
+    if not request_ok:
+        response = {'observation_id': _id, 'error': error}
+        print(response)
+        return jsonify(response)
+    
+    request_ok, error = check_numerical_data(obs_dict)
+    if not request_ok:
+        response = {'observation_id': _id, 'error': error}
+        print(response)
+        return jsonify(response)
+
+    request_ok, error = check_boolean_data(obs_dict)
+    if not request_ok:
+        response = {'observation_id': _id, 'error': error}
+        print(response)
+        return jsonify(response)
+
+    request_ok, error = check_type(obs_dict)
+    if not request_ok:
+        response = {'observation_id': _id, 'error': error}
+        print(response)
+        return jsonify(response)
+
+    request_ok, error = check_gender(obs_dict)
+    if not request_ok:
+        response = {'observation_id': _id, 'error': error}
+        print(response)
+        return jsonify(response)
+
+    request_ok, error = check_age(obs_dict)
+    if not request_ok:
+        response = {'observation_id': _id, 'error': error}
+        print(response)
+        return jsonify(response)
+
+    request_ok, error = check_ethnicity(obs_dict)
+    if not request_ok:
+        response = {'observation_id': _id, 'error': error}
+        print(response)
+        return jsonify(response)
+
+    ##end of validations
+    obs = pd.DataFrame([obs_dict], columns=columns)
+    try:
+        obs = obs.astype(dtypes)
+    except ValueError:
+        error = 'Observation is invalid!'
+        response = {'error': error}
+        print(error)
+        return jsonify(response)
+
+    obs = pd.DataFrame([obs_dict])
+    obs = new_features(obs)
+    obs = obs[columns].astype(dtypes)
+
+    predicted = pipeline.predict(obs)
+    response = {'outcome': predicted}
+
+    p = Prediction(
+        observation_id = _id,
+        outcome = predicted,
+        observation = obs_dict
+    )
+    try:
+        p.save()
+    except IntegrityError:
+        error_msg = "ERROR: ID: '{}' already exists".format(_id)
+        response = {'error': error_msg}
+        print(error_msg)
+        DB.rollback()
+    return jsonify(response)
+
+@app.route('/search_result', methods=['POST'])
+def update():
+    obs = request.get_json()
+    try:
+        p = Prediction.get(Prediction.observation_id == obs['observation_id'])
+        p.predicted_outcome = obs['outcome']
+        p.save()
+        response = {}
+        for key in ['observation_id', 'outcome', 'predicted_outcome']:
+            response[key] = model_to_dict(p)[key]
+        return jsonify(response)
+    except Prediction.DoesNotExist:
+        error_msg = 'Observation ID: "{}" does not exist'.format(obs['observation_id'])
+        return jsonify({'error': error_msg})
+
+
+# End webserver
+########################################
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', debug=True, port=5000)
