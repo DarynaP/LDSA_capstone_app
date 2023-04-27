@@ -55,7 +55,7 @@ with open('dtypes.pickle', 'rb') as fh:
 app = Flask(__name__)
 
 
-@app.route('/should_search', methods=['POST'])
+@app.route('/should_search/', methods=['POST'])
 def predict():
     obs_dict = request.get_json()
     ##start validations
@@ -146,7 +146,7 @@ def predict():
         DB.rollback()
     return jsonify(response)
 
-@app.route('/search_result', methods=['POST'])
+@app.route('/search_result/', methods=['POST'])
 def update():
     obs = request.get_json()
     try:
