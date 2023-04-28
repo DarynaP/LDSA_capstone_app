@@ -130,7 +130,7 @@ def should_search():
     obs = obs[columns].astype(dtypes)
 
     predicted = pipeline.predict(obs)[0]
-    response = {'outcome': predicted}
+    response = {'outcome': bool(predicted)}
     return jsonify(response)
 
     p = Prediction(
