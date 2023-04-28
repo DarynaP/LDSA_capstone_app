@@ -104,6 +104,25 @@ def check_ethnicity(observation):
     return True, ""
 
 ## Functions for data processing and new features
+
+def get_suburb_city(lat, lon):
+    geolocator = Nominatim(user_agent="geoapi_app")
+    if lat != 0 and lon != 0:
+        location = geolocator.reverse(f"{lat},{lon}")
+        address = location.raw['address']
+        try:
+            suburb = address['suburb']
+        except KeyError:
+            suburb = 'Unknown suburb'
+        try:
+            city = address['city']
+        except KeyError:
+            city = 'Unknown city'
+    else:
+        return ['Unknown suburb', 'Unknown city']
+    
+    return [suburb, city]
+
 def new_features(df):
     _df = df.copy()
 
