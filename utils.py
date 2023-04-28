@@ -145,7 +145,8 @@ def new_features(df):
     _df.drop(columns=['Date'], inplace=True)
 
     #Transform Latitude and Longitude to float type
-
+    _df['Latitude'] = _df['Latitude'].fillna(0)
+    _df['Longitude'] = _df['Longitude'].fillna(0)
     #Create new variables city and 
     _df[['suburb', 'city']] = _df.apply(lambda row: pd.Series(get_suburb_city(row['Latitude'], row['Longitude'])), axis=1)
     _df.drop(columns=['Latitude', 'Longitude'], inplace=True)
@@ -157,6 +158,8 @@ def new_features(df):
 
 
     _df['Legislation'] = _df['Legislation'].str.split('(', expand=True)[0].str.strip()
+
+    _df["Part of a policing operation"] = _df["Part of a policing operation"].fillna(False)
 
         
     return _df
