@@ -129,7 +129,7 @@ def should_search():
 
     p = Prediction(
         observation_id = _id,
-        outcome = predicted,
+        outcome = bool(predicted),
         observation = obs_dict)
     try:
         p.save()
@@ -144,7 +144,7 @@ def search_result():
     obs = request.get_json()
     try:
         p = Prediction.get(Prediction.observation_id == obs['observation_id'])
-        p.predicted_outcome = obs['outcome']
+        p.predicted_outcome = bool(obs['outcome'])
         p.save()
         response = {}
         for key in ['observation_id', 'outcome', 'predicted_outcome']:
