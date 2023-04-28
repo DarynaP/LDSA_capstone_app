@@ -81,28 +81,6 @@ def check_ethnicity(observation):
         return False, error
     return True, ""
 
-def transform_lat_lon(observation):
-    num_columns = ["Latitude", "Longitude"]
-
-    for col in num_columns:
-        if type(observation[col]) != float:
-            observation[col] = 0
-    return observation
-
-def transform_operation(observation):
-    
-    column = "Part of a policing operation"
-
-    if type(observation[column]) != bool:
-        observation[column] = "Unknown"
-    return observation
-
-def transform_legislation(observation):
-    column = 'Legislation'
-    if type(observation[column]) != str:
-        observation[column] = "Unknown Legislation"
-    return observation
-
 
 ## Functions for data processing and new features
 
@@ -155,7 +133,8 @@ def new_features(df):
 
     _df['Legislation'] = _df['Legislation'].str.split('(', expand=True)[0].str.strip()
 
+    _df['Part of a policing operation'] = _df['Part of a policing operation'].replace({"Unknown": False})
 
-        
+
     return _df
 
