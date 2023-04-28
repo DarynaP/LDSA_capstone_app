@@ -129,7 +129,7 @@ def should_search():
     obs = new_features(obs)
     obs = obs[columns].astype(dtypes)
 
-    predicted = pipeline.predict(obs)
+    predicted = pipeline.predict(obs)[0]
     response = {'outcome': predicted}
 
     p = Prediction(
