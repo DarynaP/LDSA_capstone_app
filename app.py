@@ -116,14 +116,7 @@ def should_search():
         return jsonify(response)
 
     ##end of validations
-    obs = pd.DataFrame([obs_dict], columns=columns)
-    try:
-        obs = obs.astype(dtypes)
-    except ValueError:
-        error = 'Observation is invalid!'
-        response = {'error': error}
-        print(error)
-        return jsonify(response)
+  
 
     obs = pd.DataFrame([obs_dict])
     obs = new_features(obs)
