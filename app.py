@@ -85,18 +85,6 @@ def should_search():
         response = {'observation_id': _id, 'error': error}
         print(response)
         return jsonify(response)
-    
-    request_ok, error = check_numerical_data(obs_dict)
-    if not request_ok:
-        response = {'observation_id': _id, 'error': error}
-        print(response)
-        return jsonify(response)
-
-    request_ok, error = check_boolean_data(obs_dict)
-    if not request_ok:
-        response = {'observation_id': _id, 'error': error}
-        print(response)
-        return jsonify(response)
 
     request_ok, error = check_type(obs_dict)
     if not request_ok:
@@ -123,11 +111,17 @@ def should_search():
         return jsonify(response)
 
     ##end of validations
-  
+
+    ##start transformations
+    obs_dict = transform_numerical_data(obs_dict)
+    obs_dict = transform_operation(obs_dict)
+    obs_dict = transform_legislation(obs_dict):
+ 
 
     obs = pd.DataFrame([obs_dict])
     obs = new_features(obs)
     obs = obs[columns].astype(dtypes)
+    ##end transformations
 
     predicted = pipeline.predict(obs)[0]
     response = {'outcome': bool(predicted)}
