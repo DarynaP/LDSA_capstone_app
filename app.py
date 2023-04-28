@@ -7,7 +7,14 @@ from flask import Flask, jsonify, request
 from peewee import (Model, IntegerField, FloatField,TextField, IntegrityError,BooleanField)
 from playhouse.shortcuts import model_to_dict
 from playhouse.db_url import connect
+#for pipeline
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.pipeline import make_pipeline, Pipeline
 from category_encoders import OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.impute import SimpleImputer
+from sklearn.model_selection import cross_val_score, GridSearchCV
 from utils import *
 
 
