@@ -115,10 +115,6 @@ def should_search():
 
     ##start transformations
 
-    obs_dict = transform_lat_lon(obs_dict)
-    obs_dict = transform_operation(obs_dict)
-    obs_dict = transform_legislation(obs_dict)
-    
   
     obs = pd.DataFrame([obs_dict])
     obs = new_features(obs)
