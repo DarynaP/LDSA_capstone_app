@@ -26,7 +26,7 @@ def check_columns(observation):
         missing = valid_columns - keys
         error = "The following column(s) are missing: {}".format(missing)
         return False, error
-
+    return True, ""
 
 # Categorical
 def check_categorical_data(observation):
