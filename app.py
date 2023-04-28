@@ -125,7 +125,6 @@ def should_search():
 
     predicted = pipeline.predict(obs)[0]
     response = {'outcome': bool(predicted)}
-    return jsonify(response)
 
     p = Prediction(
         observation_id = _id,
@@ -137,6 +136,7 @@ def should_search():
         error_msg = "ERROR: ID: '{}' already exists".format(_id)
         response = {'error': error_msg}
         DB.rollback()
+    
     return jsonify(response)
 
 @app.route('/search_result/', methods=['POST'])
