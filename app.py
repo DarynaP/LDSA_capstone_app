@@ -4,7 +4,7 @@ import pickle
 import joblib
 import pandas as pd
 from flask import Flask, jsonify, request
-from peewee import (Model, IntegerField, FloatField,TextField, IntegrityError,BooleanField)
+from peewee import (Model, IntegerField, FloatField,TextField, IntegrityError, BooleanField)
 from playhouse.shortcuts import model_to_dict
 from playhouse.db_url import connect
 #for pipeline
@@ -131,6 +131,7 @@ def should_search():
 
     predicted = pipeline.predict(obs)[0]
     response = {'outcome': predicted}
+    return jsonify(response)
 
     p = Prediction(
         observation_id = _id,
@@ -140,11 +141,10 @@ def should_search():
     try:
         p.save()
     except IntegrityError:
-        error_msg = "ERROR: ID: '{}' already exists".format(_id)
-        response = {'error': error_msg}
-        print(error_msg)
+        #error_msg = "ERROR: ID: '{}' already exists".format(_id)
+        #response = {'error': error_msg}
         DB.rollback()
-    return jsonify(response)
+    #return jsonify(response)
 
 @app.route('/search_result/', methods=['POST'])
 def search_result():
