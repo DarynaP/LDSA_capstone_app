@@ -112,11 +112,18 @@ def should_search():
         return jsonify(response)
 
     ##end of validations
-  
 
+    ##start transformations
+
+    obs_dict = transform_lat_lon(obs_dict)
+    obs_dict = transform_operation(obs_dict)
+    obs_dict = transform_legislation(obs_dict)
+    
+  
     obs = pd.DataFrame([obs_dict])
     obs = new_features(obs)
     obs = obs[columns].astype(dtypes)
+    ##end transformations
 
     predicted = pipeline.predict(obs)[0]
     response = {'outcome': predicted}

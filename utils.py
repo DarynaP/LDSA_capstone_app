@@ -81,6 +81,29 @@ def check_ethnicity(observation):
         return False, error
     return True, ""
 
+def transform_lat_lon(observation):
+    num_columns = ["Latitude", "Longitude"]
+
+    for col in num_columns:
+        if type(observation[col]) != float:
+            observation[col] = 0
+    return observation
+
+def transform_operation(observation):
+    
+    column = "Part of a policing operation"
+
+    if type(observation[column]) != bool:
+        observation[column] = False
+    return observation
+
+def transform_legislation(observation):
+     column = 'Legislation'
+     if type(observation[column]) != str:
+        observation[column] = "Unknown Legislation"
+    return observation
+
+
 ## Functions for data processing and new features
 
 def get_suburb_city(lat, lon):
@@ -120,11 +143,7 @@ def new_features(df):
     #Dropping the Date column 
     _df.drop(columns=['Date'], inplace=True)
 
-    #Transform Latitude and Longitude to float type
 
-    #Fill the none values with zero
-    _df['Latitude'] = _df['Latitude'].fillna(0)
-    _df['Longitude'] = _df['Longitude'].fillna(0)
     #Create new variables city and 
     _df[['suburb', 'city']] = _df.apply(lambda row: pd.Series(get_suburb_city(row['Latitude'], row['Longitude'])), axis=1)
     _df.drop(columns=['Latitude', 'Longitude'], inplace=True)
@@ -134,10 +153,8 @@ def new_features(df):
     for cat in cat_columns:
         _df[cat] = _df[cat].str.lower()
 
-    _df['Legislation'] = _df['Legislation'].replace({None: "Unknown Legislation"})
     _df['Legislation'] = _df['Legislation'].str.split('(', expand=True)[0].str.strip()
 
-    _df['Part of a policing operation'] = _df['Part of a policing operation'].fillna(False)
 
         
     return _df
