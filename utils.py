@@ -31,8 +31,7 @@ def check_columns(observation):
 # Categorical
 def check_categorical_data(observation):
 
-    cat_columns = ["Type", "Date",  "Gender", "Age range", "Officer-defined ethnicity",
-    "Legislation", "Object of search", "station"]
+    cat_columns = ["Type", "Date",  "Gender", "Age range", "Officer-defined ethnicity", "Object of search", "station"]
     invalid_columns = []
     for col in cat_columns:
         if type(observation[col]) != str:
@@ -156,7 +155,7 @@ def new_features(df):
     for cat in cat_columns:
         _df[cat] = _df[cat].str.lower()
 
-
+    _df['Legislation'] = _df['Legislation'].fillna('Unknown Legislation')
     _df['Legislation'] = _df['Legislation'].str.split('(', expand=True)[0].str.strip()
 
     _df["Part of a policing operation"] = _df["Part of a policing operation"].fillna(False)
