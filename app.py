@@ -56,7 +56,7 @@ app = Flask(__name__)
 
 
 @app.route('/should_search/', methods=['POST'])
-def predict():
+def should_search():
     obs_dict = request.get_json()
     ##start validations
     request_ok, error = check_id(obs_dict)
@@ -147,7 +147,7 @@ def predict():
     return jsonify(response)
 
 @app.route('/search_result/', methods=['POST'])
-def update():
+def search_result():
     obs = request.get_json()
     try:
         p = Prediction.get(Prediction.observation_id == obs['observation_id'])
