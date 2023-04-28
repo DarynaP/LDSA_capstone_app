@@ -42,27 +42,27 @@ def check_categorical_data(observation):
         return False, error
     return True, ""
 # #Numerical
-# def check_numerical_data(observation):
+def check_numerical_data(observation):
 
-#     num_columns = ["Latitude", "Longitude"]
+    num_columns = ["Latitude", "Longitude"]
 
-#     invalid_columns = []
-#     for col in invalid_columns:
-#         if type(observation[col]) != float:
-#             invalid_columns.append(col)
-#     if len(invalid_columns) > 0:
-#         error = "Invalid numerical value in: {}".format(invalid_columns)
-#         return False, error
-#     return True, ""
-# #Boolean
-# def check_boolean_data(observation):
+    invalid_columns = []
+    for col in invalid_columns:
+        if type(observation[col]) != float:
+            invalid_columns.append(col)
+    if len(invalid_columns) > 0:
+        error = "Invalid numerical value in: {}".format(invalid_columns)
+        return False, error
+    return True, ""
+#Boolean
+def check_boolean_data(observation):
 
-#     column = "Part of a policing operation"
+    column = "Part of a policing operation"
 
-#     if type(observation[column]) != bool:
-#         error = "Invalid boolean value in: {}".format(column)
-#         return False, error       
-#     return  True, ""
+    if type(observation[column]) != bool:
+        error = "Invalid boolean value in: {}".format(column)
+        return False, error       
+    return  True, ""
 
 def check_type(observation):
 
