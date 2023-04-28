@@ -92,8 +92,8 @@ def should_search():
         print(response)
         return jsonify(response)
 
-     request_ok, error = check_boolean_data(obs_dict)
-     if not request_ok:
+    request_ok, error = check_boolean_data(obs_dict)
+    if not request_ok:
         response = {'observation_id': _id, 'error': error}
         print(response)
         return jsonify(response)
