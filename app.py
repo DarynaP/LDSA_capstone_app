@@ -135,10 +135,10 @@ def should_search():
     try:
         p.save()
     except IntegrityError:
-        error_msg = "ERROR: ID: '{}' already exists".format(_id)
-        response = {'error': error_msg}
+        #error_msg = "ERROR: ID: '{}' already exists".format(_id)
+        #response = {'error': error_msg}
         DB.rollback()
-        return jsonify(response)
+        #return jsonify(response)
     
     return jsonify(response)
 
