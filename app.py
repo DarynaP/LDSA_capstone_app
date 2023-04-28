@@ -86,6 +86,17 @@ def should_search():
         print(response)
         return jsonify(response)
     
+    request_ok, error = check_numerical_data(obs_dict)
+    if not request_ok:
+        response = {'observation_id': _id, 'error': error}
+        print(response)
+        return jsonify(response)
+
+     request_ok, error = check_boolean_data(obs_dict)
+     if not request_ok:
+        response = {'observation_id': _id, 'error': error}
+        print(response)
+        return jsonify(response)
 
     request_ok, error = check_type(obs_dict)
     if not request_ok:
@@ -112,14 +123,11 @@ def should_search():
         return jsonify(response)
 
     ##end of validations
-
-    ##start transformations
-
   
+
     obs = pd.DataFrame([obs_dict])
     obs = new_features(obs)
     obs = obs[columns].astype(dtypes)
-    ##end transformations
 
     predicted = pipeline.predict(obs)[0]
     response = {'outcome': predicted}
@@ -127,15 +135,15 @@ def should_search():
     p = Prediction(
         observation_id = _id,
         outcome = predicted,
-        observation = obs_dict)
+        observation = obs_dict
+    )
     try:
         p.save()
     except IntegrityError:
-        #error_msg = "ERROR: ID: '{}' already exists".format(_id)
-        #response = {'error': error_msg}
+        error_msg = "ERROR: ID: '{}' already exists".format(_id)
+        response = {'error': error_msg}
+        print(error_msg)
         DB.rollback()
-        #return jsonify(response)
-    
     return jsonify(response)
 
 @app.route('/search_result/', methods=['POST'])
