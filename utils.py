@@ -98,8 +98,8 @@ def transform_operation(observation):
     return observation
 
 def transform_legislation(observation):
-     column = 'Legislation'
-     if type(observation[column]) != str:
+    column = 'Legislation'
+    if type(observation[column]) != str:
         observation[column] = "Unknown Legislation"
     return observation
 
