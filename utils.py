@@ -94,7 +94,7 @@ def transform_operation(observation):
     column = "Part of a policing operation"
 
     if type(observation[column]) != bool:
-        observation[column] = bool(False)
+        observation[column] = "Unknown"
     return observation
 
 def transform_legislation(observation):
