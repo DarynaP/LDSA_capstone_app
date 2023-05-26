@@ -26,8 +26,8 @@ DB = connect(os.environ.get('DATABASE_URL') or 'sqlite:///predictions.db')
 class Prediction(Model):
     observation_id = TextField(unique=True)
     observation = TextField()
-    outcome = BooleanField()
-    predicted_outcome = BooleanField(null=True)
+    predicted_outcome = BooleanField()
+    outcome = BooleanField(null=True)
 
     class Meta:
         database = DB
@@ -123,12 +123,19 @@ def should_search():
     obs = obs[columns].astype(dtypes)
     ##end transformations
 
-    predicted = pipeline.predict(obs)[0]
+    #predicted = pipeline.predict(obs)[0]
+    proba = pipeline.predict_proba(obs)[0, 1]
+    threshold = 0.398
+    if proba >= threshold:
+        predicted = True
+    else:
+        predicted = False
+
     response = {'outcome': bool(predicted)}
 
     p = Prediction(
         observation_id = _id,
-        outcome = bool(predicted),
+        predicted_outcome = bool(predicted),
         observation = obs_dict)
     try:
         p.save()
@@ -144,7 +151,7 @@ def search_result():
     obs = request.get_json()
     try:
         p = Prediction.get(Prediction.observation_id == obs['observation_id'])
-        p.predicted_outcome = bool(obs['outcome'])
+        p.outcome = bool(obs['outcome'])
         p.save()
         response = {}
         for key in ['observation_id', 'outcome', 'predicted_outcome']:
