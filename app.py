@@ -140,12 +140,15 @@ def should_search():
         observation = obs_dict)
     try:
         p.save()
+        print(response, file=sys.stderr)
+        return jsonify(response)
     except IntegrityError:
         error_msg = "ERROR: ID: '{}' already exists".format(_id)
         response = {'error': error_msg}
         print(response, file=sys.stderr)
-        return jsonify(response), 405
         DB.rollback()
+        
+    
     print(response, file=sys.stderr)
     return jsonify(response)
 
