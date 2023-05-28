@@ -3,6 +3,7 @@ import json
 import pickle
 import joblib
 import pandas as pd
+import sys
 from flask import Flask, jsonify, request
 from peewee import (Model, IntegerField, FloatField,TextField, IntegrityError, BooleanField)
 from playhouse.shortcuts import model_to_dict
@@ -69,46 +70,46 @@ def should_search():
     request_ok, error = check_id(obs_dict)
     if not request_ok:
         response = {'observation_id': None, 'error': error}
-        print(response)
-        return jsonify(response)
+        print(response, file=sys.stderr)
+        return jsonify(response), 405
     #Defining id
     _id = obs_dict['observation_id']
 
     request_ok, error = check_columns(obs_dict)
     if not request_ok:
         response = {'observation_id': _id, 'error': error}
-        print(response)
-        return jsonify(response)
+        print(response, file=sys.stderr)
+        return jsonify(response), 405
 
     request_ok, error = check_categorical_data(obs_dict)
     if not request_ok:
         response = {'observation_id': _id, 'error': error}
-        print(response)
-        return jsonify(response)
+        print(response, file=sys.stderr)
+        return jsonify(response), 405
 
     request_ok, error = check_type(obs_dict)
     if not request_ok:
         response = {'observation_id': _id, 'error': error}
-        print(response)
-        return jsonify(response)
+        print(response, file=sys.stderr)
+        return jsonify(response), 405
 
     request_ok, error = check_gender(obs_dict)
     if not request_ok:
         response = {'observation_id': _id, 'error': error}
-        print(response)
-        return jsonify(response)
+        print(response, file=sys.stderr)
+        return jsonify(response), 405
 
     request_ok, error = check_age(obs_dict)
     if not request_ok:
         response = {'observation_id': _id, 'error': error}
-        print(response)
-        return jsonify(response)
+        print(response, file=sys.stderr)
+        return jsonify(response), 405
 
     request_ok, error = check_ethnicity(obs_dict)
     if not request_ok:
         response = {'observation_id': _id, 'error': error}
-        print(response)
-        return jsonify(response)
+        print(response, file=sys.stderr)
+        return jsonify(response), 405
 
     ##end of validations
 
@@ -142,8 +143,9 @@ def should_search():
     except IntegrityError:
         error_msg = "ERROR: ID: '{}' already exists".format(_id)
         response = {'error': error_msg}
+        print(response, file=sys.stderr)
         DB.rollback()
-    
+    print(response, file=sys.stderr)
     return jsonify(response)
 
 @app.route('/search_result/', methods=['POST'])
@@ -156,9 +158,11 @@ def search_result():
         response = {}
         for key in ['observation_id', 'outcome', 'predicted_outcome']:
             response[key] = model_to_dict(p)[key]
+        print(response, file=sys.stderr)
         return jsonify(response)
     except Prediction.DoesNotExist:
         error_msg = 'Observation ID: "{}" does not exist'.format(obs['observation_id'])
+        print(error_msg, file=sys.stderr)
         return jsonify({'error': error_msg})
 
 
