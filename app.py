@@ -133,6 +133,7 @@ def should_search():
         predicted = False
 
     response = {'outcome': bool(predicted)}
+    print(response, file=sys.stderr)
 
     p = Prediction(
         observation_id = _id,
@@ -140,8 +141,6 @@ def should_search():
         observation = obs_dict)
     try:
         p.save()
-        print(response, file=sys.stderr)
-        return jsonify(response)
     except IntegrityError:
         error_msg = "ERROR: ID: '{}' already exists".format(_id)
         response = {'error': error_msg}
@@ -149,7 +148,7 @@ def should_search():
         DB.rollback()
         
     
-    print(response, file=sys.stderr)
+
     return jsonify(response)
 
 @app.route('/search_result/', methods=['POST'])
