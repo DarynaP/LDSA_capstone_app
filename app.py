@@ -23,7 +23,7 @@ from utils import *
 
 DB = connect(os.environ.get('DATABASE_URL') or 'sqlite:///prediction.db')
 
-class Prediction(Model):
+class Predictions(Model):
     observation_id = TextField(unique=True)
     observation = TextField()
     predicted_outcome = BooleanField()
@@ -33,7 +33,7 @@ class Prediction(Model):
         database = DB
 
 
-DB.create_tables([Prediction], safe=True)
+DB.create_tables([Predictions], safe=True)
 
 # End database
 ########################################
@@ -131,15 +131,15 @@ def should_search():
     else:
         predicted = False
 
-    response = {'outcome': bool(predicted)}
+    response = {'outcome': predicted}
 
     p = Prediction(
         observation_id = _id,
-        predicted_outcome = bool(predicted),
+        predicted_outcome = predicted,
         observation = obs_dict)
     try:
         p.save()
-        DB.commit()
+        #DB.commit()
     except IntegrityError:
         error_msg = "ERROR: ID: '{}' already exists".format(_id)
         response = {'error': error_msg}
