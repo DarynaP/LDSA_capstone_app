@@ -124,7 +124,6 @@ def should_search():
     obs = obs[columns].astype(dtypes)
     ##end transformations
 
-    #predicted = pipeline.predict(obs)[0]
     proba = pipeline.predict_proba(obs)[0, 1]
     threshold = 0.331 
     if proba >= threshold:
@@ -132,26 +131,21 @@ def should_search():
     else:
         predicted = False
 
-    #response = {'outcome': predicted}
-    #print(response, file=sys.stderr)
+    response = {'outcome': bool(predicted)}
 
     p = Prediction(
         observation_id = _id,
-        predicted_outcome = predicted,
+        predicted_outcome = bool(predicted),
         observation = obs_dict)
     try:
         p.save()
-        response = {'outcome': predicted}
-        print(response, file=sys.stderr)
     except IntegrityError:
         error_msg = "ERROR: ID: '{}' already exists".format(_id)
         response = {'error': error_msg}
-        print(response, file=sys.stderr)
         DB.rollback()
-        
     
-
     return jsonify(response)
+
 
 @app.route('/search_result/', methods=['POST'])
 def search_result():
