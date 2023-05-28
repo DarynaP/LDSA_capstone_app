@@ -125,7 +125,7 @@ def should_search():
 
     #predicted = pipeline.predict(obs)[0]
     proba = pipeline.predict_proba(obs)[0, 1]
-    threshold = 0.398
+    threshold = 0.331 
     if proba >= threshold:
         predicted = True
     else:
