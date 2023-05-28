@@ -3,7 +3,6 @@ import json
 import pickle
 import joblib
 import pandas as pd
-import sys
 from flask import Flask, jsonify, request
 from peewee import (Model, IntegerField, FloatField,TextField, IntegrityError, BooleanField)
 from playhouse.shortcuts import model_to_dict
@@ -22,9 +21,9 @@ from utils import *
 ########################################
 # Begin database
 
-DB = connect(os.environ.get('DATABASE_URL') or 'sqlite:///predictions.db')
+DB = connect(os.environ.get('DATABASE_URL') or 'sqlite:///prediction.db')
 
-class Prediction(Model):
+class Predictions(Model):
     observation_id = TextField(unique=True)
     observation = TextField()
     predicted_outcome = BooleanField()
@@ -34,7 +33,7 @@ class Prediction(Model):
         database = DB
 
 
-DB.create_tables([Prediction], safe=True)
+DB.create_tables([Predictions], safe=True)
 
 # End database
 ########################################
@@ -70,46 +69,46 @@ def should_search():
     request_ok, error = check_id(obs_dict)
     if not request_ok:
         response = {'observation_id': None, 'error': error}
-        print(response, file=sys.stderr)
-        return jsonify(response), 405
+        print(response)
+        return jsonify(response)
     #Defining id
     _id = obs_dict['observation_id']
 
     request_ok, error = check_columns(obs_dict)
     if not request_ok:
         response = {'observation_id': _id, 'error': error}
-        print(response, file=sys.stderr)
-        return jsonify(response), 405
+        print(response)
+        return jsonify(response)
 
     request_ok, error = check_categorical_data(obs_dict)
     if not request_ok:
         response = {'observation_id': _id, 'error': error}
-        print(response, file=sys.stderr)
-        return jsonify(response), 405
+        print(response)
+        return jsonify(response)
 
     request_ok, error = check_type(obs_dict)
     if not request_ok:
         response = {'observation_id': _id, 'error': error}
-        print(response, file=sys.stderr)
-        return jsonify(response), 405
+        print(response)
+        return jsonify(response)
 
     request_ok, error = check_gender(obs_dict)
     if not request_ok:
         response = {'observation_id': _id, 'error': error}
-        print(response, file=sys.stderr)
-        return jsonify(response), 405
+        print(response)
+        return jsonify(response)
 
     request_ok, error = check_age(obs_dict)
     if not request_ok:
         response = {'observation_id': _id, 'error': error}
-        print(response, file=sys.stderr)
-        return jsonify(response), 405
+        print(response)
+        return jsonify(response)
 
     request_ok, error = check_ethnicity(obs_dict)
     if not request_ok:
         response = {'observation_id': _id, 'error': error}
-        print(response, file=sys.stderr)
-        return jsonify(response), 405
+        print(response)
+        return jsonify(response)
 
     ##end of validations
 
@@ -124,6 +123,7 @@ def should_search():
     obs = obs[columns].astype(dtypes)
     ##end transformations
 
+    #predicted = pipeline.predict(obs)[0]
     proba = pipeline.predict_proba(obs)[0, 1]
     threshold = 0.331 
     if proba >= threshold:
@@ -131,22 +131,21 @@ def should_search():
     else:
         predicted = False
 
-    response = {'outcome': bool(predicted)}
-    print(response, file=sys.stderr)
+    response = {'outcome': predicted}
 
     p = Prediction(
         observation_id = _id,
-        predicted_outcome = bool(predicted),
+        predicted_outcome = predicted,
         observation = obs_dict)
     try:
         p.save()
+        #DB.commit()
     except IntegrityError:
         error_msg = "ERROR: ID: '{}' already exists".format(_id)
         response = {'error': error_msg}
         DB.rollback()
     
     return jsonify(response)
-
 
 @app.route('/search_result/', methods=['POST'])
 def search_result():
@@ -158,12 +157,10 @@ def search_result():
         response = {}
         for key in ['observation_id', 'outcome', 'predicted_outcome']:
             response[key] = model_to_dict(p)[key]
-        print(response, file=sys.stderr)
         return jsonify(response)
     except Prediction.DoesNotExist:
         error_msg = 'Observation ID: "{}" does not exist'.format(obs['observation_id'])
-        print(error_msg, file=sys.stderr)
-        return jsonify({'error': error_msg}), 405
+        return jsonify({'error': error_msg})
 
 
 # End webserver
