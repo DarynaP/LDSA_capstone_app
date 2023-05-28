@@ -144,6 +144,7 @@ def should_search():
         error_msg = "ERROR: ID: '{}' already exists".format(_id)
         response = {'error': error_msg}
         print(response, file=sys.stderr)
+        return jsonify(response), 405
         DB.rollback()
     print(response, file=sys.stderr)
     return jsonify(response)
@@ -163,7 +164,7 @@ def search_result():
     except Prediction.DoesNotExist:
         error_msg = 'Observation ID: "{}" does not exist'.format(obs['observation_id'])
         print(error_msg, file=sys.stderr)
-        return jsonify({'error': error_msg})
+        return jsonify({'error': error_msg}), 405
 
 
 # End webserver
