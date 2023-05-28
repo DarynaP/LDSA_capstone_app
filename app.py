@@ -134,7 +134,7 @@ def should_search():
     response = {'outcome': bool(predicted)}
     print(response, file=sys.stderr)
 
-    p = Prediction(
+    p = Predictions(
         observation_id = _id,
         predicted_outcome = bool(predicted),
         observation = obs_dict)
@@ -155,7 +155,7 @@ def should_search():
 def search_result():
     obs = request.get_json()
     try:
-        p = Prediction.get(Prediction.observation_id == obs['observation_id'])
+        p = Predictions.get(Predictions.observation_id == obs['observation_id'])
         p.outcome = bool(obs['outcome'])
         p.save()
         response = {}
@@ -163,7 +163,7 @@ def search_result():
             response[key] = model_to_dict(p)[key]
         print(response, file=sys.stderr)
         return jsonify(response)
-    except Prediction.DoesNotExist:
+    except Predictions.DoesNotExist:
         error_msg = 'Observation ID: "{}" does not exist'.format(obs['observation_id'])
         print(error_msg, file=sys.stderr)
         return jsonify({'error': error_msg}), 405
