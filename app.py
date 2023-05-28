@@ -21,7 +21,7 @@ from utils import *
 ########################################
 # Begin database
 
-DB = connect(os.environ.get('DATABASE_URL') or 'sqlite:///predictions.db')
+DB = connect(os.environ.get('DATABASE_URL') or 'sqlite:///prediction.db')
 
 class Prediction(Model):
     observation_id = TextField(unique=True)
@@ -139,6 +139,7 @@ def should_search():
         observation = obs_dict)
     try:
         p.save()
+        DB.commit()
     except IntegrityError:
         error_msg = "ERROR: ID: '{}' already exists".format(_id)
         response = {'error': error_msg}
