@@ -132,15 +132,17 @@ def should_search():
     else:
         predicted = False
 
-    response = {'outcome': bool(predicted)}
-    print(response, file=sys.stderr)
+    #response = {'outcome': predicted}
+    #print(response, file=sys.stderr)
 
     p = Prediction(
         observation_id = _id,
-        predicted_outcome = bool(predicted),
+        predicted_outcome = predicted,
         observation = obs_dict)
     try:
         p.save()
+        response = {'outcome': predicted}
+        print(response, file=sys.stderr)
     except IntegrityError:
         error_msg = "ERROR: ID: '{}' already exists".format(_id)
         response = {'error': error_msg}
