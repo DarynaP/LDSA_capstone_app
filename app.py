@@ -132,7 +132,7 @@ def should_search():
         predicted = False
 
     response = {'outcome': bool(predicted)}
-    print(response, file=sys.stderr)
+    #print(response, file=sys.stderr)
 
     p = Predictions(
         observation_id = _id,
